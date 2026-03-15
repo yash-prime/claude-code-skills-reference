@@ -1,6 +1,6 @@
 # Claude Code Skills & Agents — Complete Reference Guide
 
-> A detailed reference for all installed skills, agents, and plugins in this Claude Code setup.
+> A detailed reference for all installed skills, agents, plugins, and MCP servers in this Claude Code setup.
 > Covers when to use each tool, what commands are available, and how they work together.
 
 ---
@@ -11,9 +11,11 @@
 2. [everything-claude-code (ECC)](#2-everything-claude-code-ecc)
 3. [ui-ux-pro-max](#3-ui-ux-pro-max)
 4. [claude-mem](#4-claude-mem)
-5. [awesome-claude-code (Resource Directory)](#5-awesome-claude-code-resource-directory)
-6. [How They Work Together](#6-how-they-work-together)
-7. [Quick Decision Guide](#7-quick-decision-guide)
+5. [Superpowers](#5-superpowers)
+6. [MCP Servers](#6-mcp-servers)
+7. [awesome-claude-code (Resource Directory)](#7-awesome-claude-code-resource-directory)
+8. [How They Work Together](#8-how-they-work-together)
+9. [Quick Decision Guide](#9-quick-decision-guide)
 
 ---
 
@@ -213,7 +215,136 @@ No manual action needed — it runs in the background.
 
 ---
 
-## 5. awesome-claude-code (Resource Directory)
+## 5. Superpowers
+
+**Source:** https://github.com/obra/superpowers
+**Install method:** `claude plugins install superpowers@claude-plugins-official`
+**Namespace:** Skills trigger automatically — no `/command` needed
+**Role:** Complete software development workflow — spec → plan → subagent-driven execution.
+
+### What it does
+
+Superpowers wraps the full development workflow in a set of composable skills that activate automatically. When you describe a feature to build, it steps back and teases out a proper spec before writing any code. Then it creates a clear plan, executes it via subagent-driven development, and verifies the result.
+
+### When to use it
+
+- You want structured spec/plan/execute flow without explicit commands
+- Building features where autonomous multi-hour execution without deviation is desirable
+- Pair with GSD for maximum structure, or use standalone for lighter projects
+- Enforces TDD, YAGNI, and DRY automatically
+
+### Skills (trigger automatically)
+
+| Skill | What it does |
+|---|---|
+| `brainstorming` | Teases out a clear spec through conversation before writing code |
+| `writing-plans` | Creates clear implementation plans a junior dev could follow |
+| `executing-plans` | Runs plans via subagent-driven development with inspection |
+| `test-driven-development` | Enforces true red/green TDD throughout execution |
+| `subagent-driven-development` | Parallel subagent execution with review at each step |
+| `systematic-debugging` | Structured debugging with root cause investigation |
+| `verification-before-completion` | Verifies work against plan criteria before calling it done |
+| `requesting-code-review` | Structured code review requests |
+| `receiving-code-review` | Processes and applies review feedback |
+| `using-git-worktrees` | Manages git worktrees for parallel branch work |
+| `dispatching-parallel-agents` | Coordinates multiple agents on independent tasks |
+| `finishing-a-development-branch` | Branch cleanup, final checks, and PR preparation |
+
+### Key difference from GSD
+
+GSD requires explicit commands (`/gsd:plan-phase`, `/gsd:execute-phase`) and manages a full project directory structure. Superpowers is lighter — it activates implicitly and focuses on the immediate task. Use GSD for multi-phase projects with roadmaps; Superpowers for individual features or when you want autonomous execution without the overhead.
+
+---
+
+## 6. MCP Servers
+
+MCP (Model Context Protocol) servers extend Claude's capabilities by connecting it to external systems. These are installed globally and available in every session.
+
+### GitHub MCP
+
+**URL:** `https://api.githubcopilot.com/mcp`
+**Transport:** HTTP
+**Install:** `claude mcp add-json github '{"type":"http","url":"https://api.githubcopilot.com/mcp","headers":{"Authorization":"Bearer YOUR_GITHUB_PAT"}}' --scope user`
+
+Connects Claude directly to the GitHub API. Enables reading repos, managing issues and PRs, monitoring Actions workflows, analyzing security findings, and automating GitHub workflows through natural language.
+
+**Use for:**
+- Searching code across repos without leaving the terminal
+- Creating/updating issues and PRs
+- Checking CI/CD run status and failure analysis
+- Reviewing Dependabot alerts and security findings
+- Managing releases and notifications
+
+---
+
+### Context7 MCP
+
+**Package:** `@upstash/context7-mcp`
+**Transport:** stdio via `npx -y @upstash/context7-mcp@latest`
+**Install:** `claude mcp add --transport stdio context7 -- npx -y @upstash/context7-mcp@latest`
+
+Fetches up-to-date, version-specific library documentation and code examples directly from source. Eliminates hallucinated APIs by grounding Claude in real, current docs.
+
+**Use for:**
+- Working with any library and needing accurate API docs
+- Getting real code examples that match the version you're using
+- Avoiding stale knowledge about rapidly-evolving packages (React, Next.js, Tailwind, etc.)
+
+**How to invoke:** Just mention `use context7` in your prompt, or Claude will use it automatically when researching libraries.
+
+---
+
+### Supabase MCP
+
+**URL:** `https://mcp.supabase.com/mcp`
+**Transport:** HTTP
+**Install:** `claude mcp add --transport http supabase https://mcp.supabase.com/mcp`
+**Note:** Requires authentication — run `claude mcp auth supabase` after install.
+
+Direct integration with the Supabase platform. Enables querying databases, managing tables and migrations, reading logs, and interacting with Edge Functions without leaving Claude Code.
+
+**Use for:**
+- Querying your Supabase database during development
+- Generating and reviewing migrations
+- Checking database logs and performance
+- Managing RLS policies and Auth configurations
+- Deploying and testing Edge Functions
+
+---
+
+### CCUsage MCP
+
+**Package:** `@ccusage/mcp`
+**Transport:** stdio via `npx -y @ccusage/mcp@latest`
+**Install:** `claude mcp add --transport stdio ccusage -- npx -y @ccusage/mcp@latest`
+
+Exposes Claude Code usage data (token counts, costs, session history) from local JSONL files directly to Claude. Enables real-time cost awareness during sessions.
+
+**Use for:**
+- Checking how much a session has cost so far
+- Reviewing daily/monthly usage and spend
+- Comparing costs across different sessions or projects
+- Budget tracking and awareness
+
+**CLI alternative:** `npx ccusage@latest` for a standalone usage report.
+
+---
+
+### notebooklm-mcp
+
+**Binary:** `notebooklm-mcp`
+**Transport:** stdio
+**Role:** Connects Claude to Google NotebookLM for notebook management, source ingestion, AI audio/video studio creation, and cross-notebook research.
+
+**Use for:**
+- Creating NotebookLM notebooks from URLs, text, or Drive documents
+- Generating AI audio overviews and video from sources
+- Querying notebooks with natural language
+- Research synthesis across multiple sources
+
+---
+
+## 7. awesome-claude-code (Resource Directory)
 
 **Source:** https://github.com/hesreallyhim/awesome-claude-code
 **Type:** Curated discovery resource — NOT a plugin to install
@@ -248,7 +379,7 @@ An "awesome list" — a community-maintained, selectively curated index of every
 
 ---
 
-## 6. How They Work Together
+## 8. How They Work Together
 
 These tools are designed to complement each other — they occupy different layers of your workflow and rarely overlap.
 
@@ -260,8 +391,9 @@ These tools are designed to complement each other — they occupy different laye
 └─────────────────────────┬───────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
-│                   TASK LEVEL (ECC)                          │
+│           TASK LEVEL (ECC + Superpowers)                    │
 │   /everything-claude-code:tdd → :security-review → :review │
+│   Superpowers: spec → plan → subagent execution (auto)      │
 └─────────────────────────┬───────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
@@ -272,6 +404,11 @@ These tools are designed to complement each other — they occupy different laye
 ┌─────────────────────────────────────────────────────────────┐
 │               MEMORY LAYER (claude-mem) — always on         │
 │        Runs in background, persists context automatically   │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│               MCP LAYER — always available                  │
+│  GitHub · Context7 · Supabase · CCUsage · NotebookLM        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -292,23 +429,32 @@ These tools are designed to complement each other — they occupy different laye
    → /everything-claude-code:security-review  (check for vulnerabilities)
    → /everything-claude-code:python-review    (language-specific review)
 
-5. Building UI components
+5. Working with libraries
+   → Context7 MCP auto-fetches accurate docs (mention "use context7")
+
+6. Working with Supabase backend
+   → Supabase MCP for direct DB queries, migrations, and logs
+
+7. Building UI components
    → /ui-ux-pro-max:ui-ux-pro-max            (design system + component code)
 
-6. Verifying the phase
+8. Verifying the phase
    → /gsd:verify-work          (UAT against plan criteria)
 
-7. Between sessions
+9. Between sessions
    → claude-mem auto-saves context
    → /gsd:resume-work          (restores project context next session)
 
-8. Discovering new tools
-   → browse https://github.com/hesreallyhim/awesome-claude-code
+10. Tracking costs
+    → CCUsage MCP for real-time spend during session
+
+11. Discovering new tools
+    → browse https://github.com/hesreallyhim/awesome-claude-code
 ```
 
 ---
 
-## 7. Quick Decision Guide
+## 9. Quick Decision Guide
 
 > "Which tool do I reach for?"
 
@@ -316,13 +462,17 @@ These tools are designed to complement each other — they occupy different laye
 |---|---|
 | Starting a new project | `/gsd:new-project` |
 | Planning a chunk of work | `/gsd:plan-phase` |
-| Writing a new feature | `/everything-claude-code:tdd` |
+| Writing a new feature | `/everything-claude-code:tdd` or Superpowers (auto) |
 | Just wrote code, want a quality check | `/everything-claude-code:python-review` (or go/kotlin) |
 | About to ship — security check | `/everything-claude-code:security-review` |
 | Need a UI component or design direction | `/ui-ux-pro-max:ui-ux-pro-max` |
 | Build is failing | `/everything-claude-code:go-build` / `:kotlin-build` |
 | Can't find a bug | `/gsd:debug` |
 | Returning after a break | `/gsd:resume-work` |
+| Need accurate library docs | Context7 MCP (say "use context7") |
+| Working with Supabase | Supabase MCP (direct queries/migrations) |
+| Managing GitHub issues/PRs | GitHub MCP |
+| Checking session costs | CCUsage MCP |
 | Looking for a tool you don't have | Browse awesome-claude-code |
 | Need context from a past session | `/mem-search` |
 | Quick task, no project structure needed | `/everything-claude-code:plan` then just do it |
